@@ -1,14 +1,10 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 ## Load the data 
 library(data.table)
 DT <- fread("activity.csv")
@@ -17,7 +13,8 @@ DT[, date := as.Date(date)]
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 ## Calculate the total number of steps taken per day
 total_steps_per_day <- DT[!is.na(steps)][, sum(steps, na.rm = TRUE), 
                                          by = date]
@@ -28,18 +25,22 @@ barplot(total_steps_per_day$steps, names.arg = total_steps_per_day$date,
         main = "The total number of steps taken each day")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+
+```r
 ## Calculate the mean and median of the total number of steps taken per day
 mean_steps_per_day <- mean(total_steps_per_day$steps) 
 median_steps_per_day <- median(total_steps_per_day$steps) 
 ```
 
-The mean of the total number of steps taken per day is **`r formatC(mean_steps_per_day, format="f")`**  
-The median of the total number of steps taken per day is **`r median_steps_per_day`**
+The mean of the total number of steps taken per day is **10766.1887**  
+The median of the total number of steps taken per day is **10765**
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 ## Calculate the 5-minute interval and the average number of steps taken, 
 ## averaged across all days
 average_steps_per_interval_na <- DT[!is.na(steps)][, mean(steps, na.rm = TRUE), 
@@ -53,22 +54,27 @@ plot(average_steps_per_interval_na$interval, average_steps_per_interval_na$steps
      main = "The average number of steps taken, averaged across all days" )
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+
+```r
 ## Calculate the maximum 5-minute interval, on average across all the days 
 ## in the dataset, contains the maximum number of steps
 maximum_steps_interval <- average_steps_per_interval_na[, .SD[which.max(steps)]]
 ```
-The maximum 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is **`r maximum_steps_interval$interval`** with **`r maximum_steps_interval$steps`** steps
+The maximum 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is **835** with **206.1698113** steps
 
 ## Imputing missing values
 
-```{r}
+
+```r
 ## Calculate the total number of missing values in the dataset
 missing_values <- sum(is.na(DT$steps))
 ```
-The total number of missing values in the dataset is **`r missing_values`**  
+The total number of missing values in the dataset is **2304**  
 For missing values used median value
-```{r}
+
+```r
 ## Create a new dataset that is equal to the original dataset but with 
 ## the missing data filled in
 total_steps_per_day_with_na2 <- DT[, sum(steps), by = date]
@@ -80,25 +86,26 @@ barplot(total_steps_per_day_with_na2$steps,
         names.arg = total_steps_per_day_with_na2$date)
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
+
+```r
 ## Calculate the mean and median total number of steps taken per day
 mean_steps_per_day2 <- mean(total_steps_per_day_with_na2$steps)
 median_steps_per_day2 <- median(total_steps_per_day_with_na2$steps)
 ```
 
-The mean of the total number of steps taken per day is **`r formatC(mean_steps_per_day2, format="f")`**.  
-The median of the total number of steps taken per day is **`r median_steps_per_day2`**.
+The mean of the total number of steps taken per day is **10766.0328**.  
+The median of the total number of steps taken per day is **10765**.
 
 **The missing values does not impact on the estimates of the total daily number of steps with used strategy of filling.**
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r echo = FALSE}
-lc_value <- Sys.setlocale("LC_TIME", "C")
-```
-```{r}
 
-## Create a new factor variable in the dataset with two levels – “weekday” 
-## and “weekend” indicating whether a given date is a weekday or weekend day
+
+```r
+## Create a new factor variable in the dataset with two levels â€“ â€œweekdayâ€ 
+## and â€œweekendâ€ indicating whether a given date is a weekday or weekend day
 weekdays1 <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
 
 DT[,wDay := factor((weekdays(date) %in% weekdays1), 
@@ -113,3 +120,5 @@ library(ggplot2)
 qplot(interval, steps, data = average_steps_per_day_na_w, geom = "line", 
       facets = wDay~ .)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
